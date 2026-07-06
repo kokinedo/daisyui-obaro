@@ -1,0 +1,36 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "tanstack-start-app",
+  "compatibility_date": "2025-09-02",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "@tanstack/react-start/server-entry",
+
+  // Postgres via Cloudflare Hyperdrive.
+  //   - In dev/preview, wrangler/vite use `localConnectionString` — point it at a
+  //     local Postgres (the factory provisions one DB per app on the PC).
+  //   - In production, the factory creates a Hyperdrive config over the app's Neon
+  //     database and injects the real `id` here at go-live (replacing the placeholder).
+  //   Create one manually with:
+  //     wrangler hyperdrive create cf-obaro --connection-string="postgres://USER:PASS@HOST/DB"
+  "hyperdrive": [
+    {
+      "binding": "HYPERDRIVE",
+      "id": "REPLACE_WITH_HYPERDRIVE_ID",
+      "localConnectionString": "postgresql://postgres:postgres@localhost:5432/daisyui_obaro"
+    }
+  ]
+
+  // Optional bindings — uncomment and fill in ids to enable.
+  //
+  // KV namespace (sessions/cache):
+  //   wrangler kv namespace create CACHE
+  // "kv_namespaces": [
+  //   { "binding": "KV", "id": "REPLACE_WITH_KV_ID" }
+  // ],
+  //
+  // R2 bucket (file storage):
+  //   wrangler r2 bucket create cf-obaro-assets
+  // "r2_buckets": [
+  //   { "binding": "R2", "bucket_name": "cf-obaro-assets" }
+  // ]
+}
