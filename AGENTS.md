@@ -85,3 +85,18 @@ Hyperdrive config, a domain, Email, Stripe keys). Because all DB access is centr
 - `src/db/*` — Drizzle schema/client/seed. `src/lib/auth*.ts` — Better Auth. `src/lib/cn.ts` —
   className joiner. `wrangler.jsonc` — bindings.
 - `.claude/skills/*` — the daisyUI + dashboard skills. READ THEM.
+
+## Reliability rules (each shipped a REAL broken app — violating any one fails the eval)
+- **Seed correctness** (`src/db/seed.ts` shows the required pattern): the whole seed in ONE
+  `db.transaction` behind a `pg_advisory_xact_lock`; FK PARENTS inserted BEFORE children
+  (a membership referencing a user created later kills the seed mid-run); idempotency guard
+  on the FIRST inserted row only — guarding on a later table locks a half-seeded DB forever.
+- **Dates in Drizzle queries: typed operators only** (`gte`/`lt`/`lte`/`between`). NEVER
+  interpolate a JS `Date` into a raw sql`...` fragment — it reaches Postgres as
+  `Date.toString()`, an invalid timestamp literal, and 500s the page.
+- **`getRequestHeaders()` returns a `Headers` instance** — read with `.get("cookie")`;
+  indexing it like a plain object silently returns undefined.
+- **Auth self-test before you finish:** POST the demo credentials to
+  `/api/auth/sign-in/email` (with an Origin header) on the running dev server, then GET an
+  authenticated route with the returned cookie — it must 200 with content, not bounce to
+  `/login`. The eval gate performs this exact check and FAILS the build if it breaks.
