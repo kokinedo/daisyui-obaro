@@ -100,3 +100,8 @@ Hyperdrive config, a domain, Email, Stripe keys). Because all DB access is centr
   `/api/auth/sign-in/email` (with an Origin header) on the running dev server, then GET an
   authenticated route with the returned cookie — it must 200 with content, not bounce to
   `/login`. The eval gate performs this exact check and FAILS the build if it breaks.
+- **Route files: a flat file next to a same-named directory is a LAYOUT.** `routes/x.tsx`
+  beside `routes/x/` parents every child route — without an `<Outlet/>` the children render
+  the PARENT's content at their own URLs (still HTTP 200!), and a redirect there loops the
+  whole section. Standalone list+detail: put the list at `routes/x/index.tsx`. Verify every
+  detail route renders its OWN content before finishing.
