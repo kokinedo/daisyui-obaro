@@ -1,4 +1,4 @@
-import { pgTable, text, boolean, timestamp } from "drizzle-orm/pg-core";
+import { boolean, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
 /**
  * Drizzle schema for Postgres (via Cloudflare Hyperdrive in prod, a local
@@ -12,22 +12,22 @@ import { pgTable, text, boolean, timestamp } from "drizzle-orm/pg-core";
  */
 
 export const user = pgTable("user", {
-  id: text("id").primaryKey(),
-  name: text("name").notNull(),
+  createdAt: timestamp("createdAt").notNull(),
   email: text("email").notNull().unique(),
   emailVerified: boolean("emailVerified").notNull().default(false),
+  id: text("id").primaryKey(),
   image: text("image"),
-  createdAt: timestamp("createdAt").notNull(),
+  name: text("name").notNull(),
   updatedAt: timestamp("updatedAt").notNull(),
 });
 
 export const session = pgTable("session", {
-  id: text("id").primaryKey(),
-  expiresAt: timestamp("expiresAt").notNull(),
-  token: text("token").notNull().unique(),
   createdAt: timestamp("createdAt").notNull(),
-  updatedAt: timestamp("updatedAt").notNull(),
+  expiresAt: timestamp("expiresAt").notNull(),
+  id: text("id").primaryKey(),
   ipAddress: text("ipAddress"),
+  token: text("token").notNull().unique(),
+  updatedAt: timestamp("updatedAt").notNull(),
   userAgent: text("userAgent"),
   userId: text("userId")
     .notNull()
@@ -35,30 +35,30 @@ export const session = pgTable("session", {
 });
 
 export const account = pgTable("account", {
-  id: text("id").primaryKey(),
+  accessToken: text("accessToken"),
+  accessTokenExpiresAt: timestamp("accessTokenExpiresAt"),
   accountId: text("accountId").notNull(),
+  createdAt: timestamp("createdAt").notNull(),
+  id: text("id").primaryKey(),
+  idToken: text("idToken"),
+  password: text("password"),
   providerId: text("providerId").notNull(),
+  refreshToken: text("refreshToken"),
+  refreshTokenExpiresAt: timestamp("refreshTokenExpiresAt"),
+  scope: text("scope"),
+  updatedAt: timestamp("updatedAt").notNull(),
   userId: text("userId")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
-  accessToken: text("accessToken"),
-  refreshToken: text("refreshToken"),
-  idToken: text("idToken"),
-  accessTokenExpiresAt: timestamp("accessTokenExpiresAt"),
-  refreshTokenExpiresAt: timestamp("refreshTokenExpiresAt"),
-  scope: text("scope"),
-  password: text("password"),
-  createdAt: timestamp("createdAt").notNull(),
-  updatedAt: timestamp("updatedAt").notNull(),
 });
 
 export const verification = pgTable("verification", {
+  createdAt: timestamp("createdAt"),
+  expiresAt: timestamp("expiresAt").notNull(),
   id: text("id").primaryKey(),
   identifier: text("identifier").notNull(),
-  value: text("value").notNull(),
-  expiresAt: timestamp("expiresAt").notNull(),
-  createdAt: timestamp("createdAt"),
   updatedAt: timestamp("updatedAt"),
+  value: text("value").notNull(),
 });
 
 /**
@@ -66,16 +66,16 @@ export const verification = pgTable("verification", {
  * and is what the demo dashboard lists.
  */
 export const project = pgTable("project", {
+  createdAt: timestamp("createdAt").notNull(),
   id: text("id").primaryKey(),
+  status: text("status").notNull().default("active"),
+  title: text("title").notNull(),
   userId: text("userId")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
-  title: text("title").notNull(),
-  status: text("status").notNull().default("active"),
-  createdAt: timestamp("createdAt").notNull(),
 });
 
 export type User = typeof user.$inferSelect;
 export type Project = typeof project.$inferSelect;
 
-export const schema = { user, session, account, verification, project };
+export const schema = { account, project, session, user, verification };

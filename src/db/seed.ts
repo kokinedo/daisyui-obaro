@@ -1,7 +1,7 @@
 import { hashPassword } from "better-auth/crypto";
 import { sql } from "drizzle-orm";
 import type { Db } from "#/db/index";
-import { user, account, project } from "#/db/schema";
+import { account, project, user } from "#/db/schema";
 
 /**
  * Deterministic demo seed.
@@ -37,11 +37,27 @@ const EPOCH = new Date("2026-01-01T00:00:00.000Z");
 const SEED_LOCK_KEY = 823_041;
 
 const DEMO_PROJECTS = [
-  { id: "prj_demo_0000000000000001", title: "Acme Onboarding Flow", status: "active" },
-  { id: "prj_demo_0000000000000002", title: "Billing Migration", status: "active" },
-  { id: "prj_demo_0000000000000003", title: "Q1 Marketing Site", status: "paused" },
-  { id: "prj_demo_0000000000000004", title: "Legacy API Sunset", status: "archived" },
-  { id: "prj_demo_0000000000000005", title: "Mobile Beta", status: "active" },
+  {
+    id: "prj_demo_0000000000000001",
+    status: "active",
+    title: "Acme Onboarding Flow",
+  },
+  {
+    id: "prj_demo_0000000000000002",
+    status: "active",
+    title: "Billing Migration",
+  },
+  {
+    id: "prj_demo_0000000000000003",
+    status: "paused",
+    title: "Q1 Marketing Site",
+  },
+  {
+    id: "prj_demo_0000000000000004",
+    status: "archived",
+    title: "Legacy API Sunset",
+  },
+  { id: "prj_demo_0000000000000005", status: "active", title: "Mobile Beta" },
 ] as const;
 
 export async function seed(db: Db): Promise<{ seeded: boolean }> {
@@ -50,7 +66,9 @@ export async function seed(db: Db): Promise<{ seeded: boolean }> {
   const existing = await db.query.user.findFirst({
     where: (u, { eq }) => eq(u.id, DEMO_USER_ID),
   });
-  if (existing) return { seeded: false };
+  if (existing) {
+    return { seeded: false };
+  }
 
   const passwordHash = await hashPassword(DEMO_PASSWORD);
 
@@ -62,39 +80,41 @@ export async function seed(db: Db): Promise<{ seeded: boolean }> {
     const raced = await tx.query.user.findFirst({
       where: (u, { eq }) => eq(u.id, DEMO_USER_ID),
     });
-    if (raced) return { seeded: false };
+    if (raced) {
+      return { seeded: false };
+    }
 
     await tx.insert(user).values({
-      id: DEMO_USER_ID,
-      name: "Demo User",
+      createdAt: EPOCH,
       email: DEMO_EMAIL,
       emailVerified: true,
+      id: DEMO_USER_ID,
       image: null,
-      createdAt: EPOCH,
+      name: "Demo User",
       updatedAt: EPOCH,
     });
 
     // Better Auth stores the password on the credential `account` row
     // (providerId "credential", accountId === userId).
     await tx.insert(account).values({
-      id: DEMO_ACCOUNT_ID,
       accountId: DEMO_USER_ID,
-      providerId: "credential",
-      userId: DEMO_USER_ID,
-      password: passwordHash,
       createdAt: EPOCH,
+      id: DEMO_ACCOUNT_ID,
+      password: passwordHash,
+      providerId: "credential",
       updatedAt: EPOCH,
+      userId: DEMO_USER_ID,
     });
 
     for (let i = 0; i < DEMO_PROJECTS.length; i++) {
       const p = DEMO_PROJECTS[i];
       await tx.insert(project).values({
-        id: p.id,
-        userId: DEMO_USER_ID,
-        title: p.title,
-        status: p.status,
         // Deterministic staggered timestamps (one day apart).
         createdAt: new Date(EPOCH.getTime() + i * 86_400_000),
+        id: p.id,
+        status: p.status,
+        title: p.title,
+        userId: DEMO_USER_ID,
       });
     }
 

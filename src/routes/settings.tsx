@@ -5,15 +5,19 @@ import { AppLayout } from "#/components/app-layout";
 import { createAuth } from "#/lib/auth";
 
 const loadSettings = createServerFn({ method: "GET" }).handler(async () => {
-  const session = await createAuth().api.getSession({ headers: getRequestHeaders() });
-  if (!session?.user) throw redirect({ to: "/login" });
-  return { user: { name: session.user.name, email: session.user.email } };
+  const session = await createAuth().api.getSession({
+    headers: getRequestHeaders(),
+  });
+  if (!session?.user) {
+    throw redirect({ to: "/login" });
+  }
+  return { user: { email: session.user.email, name: session.user.name } };
 });
 
 export const Route = createFileRoute("/settings")({
-  loader: () => loadSettings(),
   component: Settings,
   head: () => ({ meta: [{ title: "Settings — Obaro" }] }),
+  loader: () => loadSettings(),
 });
 
 function Settings() {
@@ -26,15 +30,24 @@ function Settings() {
           <div className="card-body gap-4">
             <div>
               <h3 className="card-title text-base">Profile</h3>
-              <p className="text-sm text-base-content/60">Your account details.</p>
+              <p className="text-base-content/60 text-sm">
+                Your account details.
+              </p>
             </div>
             <label className="floating-label">
               <span>Full name</span>
-              <input className="input input-bordered w-full" defaultValue={user.name} />
+              <input
+                className="input input-bordered w-full"
+                defaultValue={user.name}
+              />
             </label>
             <label className="floating-label">
               <span>Email</span>
-              <input className="input input-bordered w-full" type="email" defaultValue={user.email} />
+              <input
+                className="input input-bordered w-full"
+                defaultValue={user.email}
+                type="email"
+              />
             </label>
             <div className="flex justify-end">
               <button className="btn btn-primary btn-sm">Save changes</button>
@@ -46,19 +59,33 @@ function Settings() {
           <div className="card-body gap-4">
             <div>
               <h3 className="card-title text-base">Notifications</h3>
-              <p className="text-sm text-base-content/60">Choose what you want to hear about.</p>
+              <p className="text-base-content/60 text-sm">
+                Choose what you want to hear about.
+              </p>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm">Product updates</span>
-              <input type="checkbox" className="toggle toggle-primary" defaultChecked />
+              <input
+                className="toggle toggle-primary"
+                defaultChecked
+                type="checkbox"
+              />
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm">Weekly summary</span>
-              <input type="checkbox" className="toggle toggle-primary" defaultChecked />
+              <input
+                className="toggle toggle-primary"
+                defaultChecked
+                type="checkbox"
+              />
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm">Security alerts</span>
-              <input type="checkbox" className="toggle toggle-primary" defaultChecked />
+              <input
+                className="toggle toggle-primary"
+                defaultChecked
+                type="checkbox"
+              />
             </div>
           </div>
         </section>
@@ -66,9 +93,13 @@ function Settings() {
         <section className="card border border-error/30 bg-base-100">
           <div className="card-body gap-3">
             <h3 className="card-title text-base text-error">Danger zone</h3>
-            <p className="text-sm text-base-content/60">Permanently delete your account and all data.</p>
+            <p className="text-base-content/60 text-sm">
+              Permanently delete your account and all data.
+            </p>
             <div className="flex justify-end">
-              <button className="btn btn-error btn-outline btn-sm">Delete account</button>
+              <button className="btn btn-error btn-outline btn-sm">
+                Delete account
+              </button>
             </div>
           </div>
         </section>

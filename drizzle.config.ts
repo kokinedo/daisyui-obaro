@@ -10,10 +10,12 @@ import { defineConfig } from "drizzle-kit";
  *   npm run db:generate  # (optional) emit SQL migrations into ./drizzle
  */
 export default defineConfig({
-  dialect: "postgresql",
-  schema: "./src/db/schema.ts",
-  out: "./drizzle",
   dbCredentials: {
-    url: process.env.DATABASE_URL ?? "postgresql://postgres:postgres@localhost:5432/daisyui_obaro",
+    url:
+      process.env.DATABASE_URL ??
+      "postgresql://postgres:postgres@localhost:5432/daisyui_obaro",
   },
+  dialect: "postgresql",
+  out: "./drizzle",
+  schema: "./src/db/schema.ts",
 });

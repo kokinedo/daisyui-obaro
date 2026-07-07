@@ -15,7 +15,13 @@
  * is deliberately no "system" option.
  */
 @plugin "daisyui" {
-  themes: light --default, dark, corporate, business, dim, nord;
+  themes:
+    light --default,
+    dark,
+    corporate,
+    business,
+    dim,
+    nord;
   root: ":root";
   logs: false;
 }
@@ -54,8 +60,8 @@ body {
    their series/labels to daisyUI CSS variables; see components/chart.tsx). */
 .apexcharts-tooltip,
 .apexcharts-xaxistooltip {
-  background: var(--color-base-200) !important;
   color: var(--color-base-content) !important;
+  background: var(--color-base-200) !important;
   border: none !important;
   border-radius: var(--radius-box) !important;
   box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1) !important;

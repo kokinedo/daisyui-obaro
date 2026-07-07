@@ -21,16 +21,16 @@ export function createAuth() {
   const env = getEnv();
   const db = makeDb(getConnectionString());
   return betterAuth({
-    database: drizzleAdapter(db, { provider: "pg", schema }),
-    secret:
-      env.BETTER_AUTH_SECRET ??
-      "dev-insecure-cf-obaro-secret-change-me-in-production",
     baseURL: env.BETTER_AUTH_URL ?? undefined,
+    database: drizzleAdapter(db, { provider: "pg", schema }),
     emailAndPassword: {
       enabled: true,
       // Keyless demo: no email verification flow required to sign in.
       requireEmailVerification: false,
     },
+    secret:
+      env.BETTER_AUTH_SECRET ??
+      "dev-insecure-cf-obaro-secret-change-me-in-production",
   });
 }
 

@@ -14,10 +14,10 @@ interface Hyperdrive {
 }
 
 export interface WorkerEnv {
-  HYPERDRIVE?: Hyperdrive;
-  DATABASE_URL?: string;
   BETTER_AUTH_SECRET?: string;
   BETTER_AUTH_URL?: string;
+  DATABASE_URL?: string;
+  HYPERDRIVE?: Hyperdrive;
 }
 
 /** The Cloudflare env for the current request/isolate. */
@@ -33,11 +33,14 @@ export function getEnv(): WorkerEnv {
  */
 export function getConnectionString(): string {
   const e = getEnv();
-  const cs = e.HYPERDRIVE?.connectionString ?? e.DATABASE_URL ?? process.env.DATABASE_URL;
+  const cs =
+    e.HYPERDRIVE?.connectionString ??
+    e.DATABASE_URL ??
+    process.env.DATABASE_URL;
   if (!cs) {
     throw new Error(
-      "Missing Postgres connection. Add a `hyperdrive` binding named \"HYPERDRIVE\" " +
-        "(with a localConnectionString for dev) to wrangler.jsonc, or set DATABASE_URL.",
+      'Missing Postgres connection. Add a `hyperdrive` binding named "HYPERDRIVE" ' +
+        "(with a localConnectionString for dev) to wrangler.jsonc, or set DATABASE_URL."
     );
   }
   return cs;

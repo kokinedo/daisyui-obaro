@@ -85,6 +85,9 @@ Hyperdrive config, a domain, Email, Stripe keys). Because all DB access is centr
 - `src/db/*` — Drizzle schema/client/seed. `src/lib/auth*.ts` — Better Auth. `src/lib/cn.ts` —
   className joiner. `wrangler.jsonc` — bindings.
 - `.claude/skills/*` — the daisyUI + dashboard skills. READ THEM.
+- **Lint/format = Ultracite (Biome)** — replaces ESLint + Prettier. Run `npm run lint`
+  (`ultracite check`) and `npm run format` (`ultracite fix`); config lives in `biome.jsonc`.
+  Format-on-save is wired in `.vscode/settings.json`, so keep edits Biome-clean.
 
 ## Reliability rules (each shipped a REAL broken app — violating any one fails the eval)
 - **Seed correctness** (`src/db/seed.ts` shows the required pattern): the whole seed in ONE

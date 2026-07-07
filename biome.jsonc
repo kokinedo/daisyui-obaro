@@ -1,0 +1,32 @@
+{
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "extends": ["ultracite/biome/core", "ultracite/biome/react"],
+  "files": {
+    "includes": [
+      "**",
+      "!src/routeTree.gen.ts",
+      "!.sandcastle",
+      "!drizzle",
+      "!.wrangler",
+      "!public"
+    ]
+  },
+  "linter": {
+    "rules": {
+      "complexity": { "noExcessiveCognitiveComplexity": "off" },
+      "performance": { "noJsxPropsBind": "off", "noAwaitInLoops": "off" },
+      "style": {
+        "noNonNullAssertion": "off",
+        "noNestedTernary": "off",
+        "noIncrementDecrement": "off",
+        "useFilenamingConvention": "off"
+      },
+      "suspicious": {
+        "noLeakedRender": "off",
+        "noShadow": "off",
+        "noUnnecessaryConditions": "off",
+        "noArrayIndexKey": "off"
+      }
+    }
+  }
+}

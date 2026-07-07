@@ -21,27 +21,46 @@ export type ChartType =
   | "heatmap";
 
 interface ChartProps {
-  type: ChartType;
-  series: ApexAxisChartSeries | ApexNonAxisChartSeries | number[];
-  /** Partial ApexCharts options; merged over the themed defaults. */
-  options?: Record<string, unknown>;
-  height?: number;
+  className?: string;
   /** Extra series colors, in daisyUI token order. Defaults to primary→accent. */
   colorTokens?: string[];
-  className?: string;
+  height?: number;
+  /** Partial ApexCharts options; merged over the themed defaults. */
+  options?: Record<string, unknown>;
+  series: ApexAxisChartSeries | ApexNonAxisChartSeries | number[];
+  type: ChartType;
 }
 
-const DEFAULT_TOKENS = ["--color-primary", "--color-secondary", "--color-accent", "--color-info"];
+const DEFAULT_TOKENS = [
+  "--color-primary",
+  "--color-secondary",
+  "--color-accent",
+  "--color-info",
+];
 
 function readVar(name: string): string {
-  if (typeof window === "undefined") return "#888";
-  const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  if (typeof window === "undefined") {
+    return "#888";
+  }
+  const v = getComputedStyle(document.documentElement)
+    .getPropertyValue(name)
+    .trim();
   return v || "#888";
 }
 
-export function Chart({ type, series, options = {}, height = 320, colorTokens, className }: ChartProps) {
+export function Chart({
+  type,
+  series,
+  options = {},
+  height = 320,
+  colorTokens,
+  className,
+}: ChartProps) {
   const el = useRef<HTMLDivElement>(null);
-  const chartRef = useRef<{ destroy: () => void; updateOptions: (o: unknown) => void } | null>(null);
+  const chartRef = useRef<{
+    destroy: () => void;
+    updateOptions: (o: unknown) => void;
+  } | null>(null);
 
   useEffect(() => {
     let disposed = false;
@@ -50,28 +69,51 @@ export function Chart({ type, series, options = {}, height = 320, colorTokens, c
     async function build() {
       const mod = await import("apexcharts");
       const ApexCharts = mod.default;
-      if (disposed || !el.current) return;
+      if (disposed || !el.current) {
+        return;
+      }
 
       const tokens = colorTokens ?? DEFAULT_TOKENS;
       const themed = () => ({
         chart: {
-          type,
-          height,
-          fontFamily: "inherit",
-          toolbar: { show: false },
-          background: "transparent",
           animations: { enabled: true, speed: 300 },
+          background: "transparent",
+          fontFamily: "inherit",
+          height,
+          toolbar: { show: false },
+          type,
         },
         colors: tokens.map(readVar),
-        stroke: { curve: "smooth", width: type === "area" || type === "line" ? 2 : 0 },
-        fill: type === "area" ? { type: "gradient", gradient: { opacityFrom: 0.35, opacityTo: 0.05 } } : {},
-        grid: { borderColor: readVar("--color-base-content") + "1a", strokeDashArray: 4 },
         dataLabels: { enabled: false },
+        fill:
+          type === "area"
+            ? {
+                gradient: { opacityFrom: 0.35, opacityTo: 0.05 },
+                type: "gradient",
+              }
+            : {},
+        grid: {
+          borderColor: `${readVar("--color-base-content")}1a`,
+          strokeDashArray: 4,
+        },
         legend: { labels: { colors: readVar("--color-base-content") } },
-        tooltip: { theme: document.documentElement.style.colorScheme === "dark" ? "dark" : "light" },
-        xaxis: { labels: { style: { colors: readVar("--color-base-content") } } },
-        yaxis: { labels: { style: { colors: readVar("--color-base-content") } } },
         series,
+        stroke: {
+          curve: "smooth",
+          width: type === "area" || type === "line" ? 2 : 0,
+        },
+        tooltip: {
+          theme:
+            document.documentElement.style.colorScheme === "dark"
+              ? "dark"
+              : "light",
+        },
+        xaxis: {
+          labels: { style: { colors: readVar("--color-base-content") } },
+        },
+        yaxis: {
+          labels: { style: { colors: readVar("--color-base-content") } },
+        },
         ...options,
       });
 
@@ -80,8 +122,13 @@ export function Chart({ type, series, options = {}, height = 320, colorTokens, c
       chartRef.current = chart as unknown as typeof chartRef.current;
 
       // Re-theme when the daisyUI theme changes.
-      observer = new MutationObserver(() => chartRef.current?.updateOptions(themed()));
-      observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme", "style"] });
+      observer = new MutationObserver(() =>
+        chartRef.current?.updateOptions(themed())
+      );
+      observer.observe(document.documentElement, {
+        attributeFilter: ["data-theme", "style"],
+        attributes: true,
+      });
     }
 
     void build();
@@ -92,7 +139,7 @@ export function Chart({ type, series, options = {}, height = 320, colorTokens, c
       chartRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [type, height, JSON.stringify(series), JSON.stringify(options)]);
+  }, [type, height, series, options, colorTokens]);
 
-  return <div ref={el} className={className} />;
+  return <div className={className} ref={el} />;
 }

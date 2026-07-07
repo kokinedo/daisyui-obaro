@@ -10,11 +10,11 @@
 /** Cloudflare Hyperdrive binding — pooled/cached Postgres connection. */
 interface Hyperdrive {
   readonly connectionString: string;
+  readonly database: string;
   readonly host: string;
+  readonly password: string;
   readonly port: number;
   readonly user: string;
-  readonly password: string;
-  readonly database: string;
 }
 
 /**

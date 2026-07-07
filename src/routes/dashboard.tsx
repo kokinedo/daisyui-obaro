@@ -4,9 +4,9 @@ import { getRequestHeaders } from "@tanstack/react-start/server";
 import { AppLayout } from "#/components/app-layout";
 import { Chart } from "#/components/chart";
 import { makeDb } from "#/db/index";
-import { getConnectionString } from "#/lib/server-env";
-import { createAuth } from "#/lib/auth";
 import { seed } from "#/db/seed";
+import { createAuth } from "#/lib/auth";
+import { getConnectionString } from "#/lib/server-env";
 
 /**
  * Server function: ensure the demo data exists, verify the session, and return
@@ -27,68 +27,117 @@ const loadDashboard = createServerFn({ method: "GET" }).handler(async () => {
   }
 
   const projects = await db.query.project.findMany({
-    where: (p, { eq }) => eq(p.userId, session.user.id),
     orderBy: (p, { desc }) => desc(p.createdAt),
+    where: (p, { eq }) => eq(p.userId, session.user.id),
   });
 
   return {
-    user: { name: session.user.name, email: session.user.email },
     projects: projects.map((p) => ({
-      id: p.id,
-      title: p.title,
-      status: p.status,
       createdAt: p.createdAt.toISOString(),
+      id: p.id,
+      status: p.status,
+      title: p.title,
     })),
+    user: { email: session.user.email, name: session.user.name },
   };
 });
 
 export const Route = createFileRoute("/dashboard")({
-  loader: () => loadDashboard(),
   component: Dashboard,
   head: () => ({ meta: [{ title: "Dashboard — Obaro" }] }),
+  loader: () => loadDashboard(),
 });
 
 const STATUS_BADGE: Record<string, string> = {
   active: "badge-success",
-  paused: "badge-warning",
   archived: "badge-ghost",
+  paused: "badge-warning",
 };
 
 // Demo analytics — replace with real series in a generated app.
 const TREND = [31, 40, 28, 51, 42, 62, 58, 73, 68, 82, 79, 94];
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const MONTHS = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
 
 function Dashboard() {
   const { user, projects } = Route.useLoaderData();
   const activeCount = projects.filter((p) => p.status === "active").length;
 
   const KPIS = [
-    { label: "Projects", value: String(projects.length), delta: "+2", up: true, icon: "icon-[lucide--folder-kanban]" },
-    { label: "Active", value: String(activeCount), delta: "+1", up: true, icon: "icon-[lucide--activity]" },
-    { label: "Members", value: "12", delta: "+3", up: true, icon: "icon-[lucide--users]" },
-    { label: "Uptime", value: "99.9%", delta: "0.0", up: true, icon: "icon-[lucide--gauge]" },
+    {
+      delta: "+2",
+      icon: "icon-[lucide--folder-kanban]",
+      label: "Projects",
+      up: true,
+      value: String(projects.length),
+    },
+    {
+      delta: "+1",
+      icon: "icon-[lucide--activity]",
+      label: "Active",
+      up: true,
+      value: String(activeCount),
+    },
+    {
+      delta: "+3",
+      icon: "icon-[lucide--users]",
+      label: "Members",
+      up: true,
+      value: "12",
+    },
+    {
+      delta: "0.0",
+      icon: "icon-[lucide--gauge]",
+      label: "Uptime",
+      up: true,
+      value: "99.9%",
+    },
   ];
 
   return (
     <AppLayout title="Dashboard" user={user}>
       <div className="mx-auto flex max-w-6xl flex-col gap-6">
         <div>
-          <p className="text-sm text-base-content/60">Welcome back</p>
-          <h2 className="text-2xl font-semibold">{user.name}</h2>
+          <p className="text-base-content/60 text-sm">Welcome back</p>
+          <h2 className="font-semibold text-2xl">{user.name}</h2>
         </div>
 
         {/* KPI row */}
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
           {KPIS.map((k) => (
-            <div key={k.label} className="card bg-base-100 shadow-xs">
+            <div className="card bg-base-100 shadow-xs" key={k.label}>
               <div className="card-body gap-2 p-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-medium uppercase tracking-wide text-base-content/60">{k.label}</span>
-                  <span className={`${k.icon} size-4 text-base-content/40`} aria-hidden="true"></span>
+                  <span className="font-medium text-base-content/60 text-xs uppercase tracking-wide">
+                    {k.label}
+                  </span>
+                  <span
+                    aria-hidden="true"
+                    className={`${k.icon} size-4 text-base-content/40`}
+                  />
                 </div>
-                <div className="text-2xl font-semibold tabular-nums sm:text-3xl">{k.value}</div>
-                <div className={`flex items-center gap-1 text-xs ${k.up ? "text-success" : "text-error"}`}>
-                  <span className="icon-[lucide--trending-up] size-3.5" aria-hidden="true"></span>
+                <div className="font-semibold text-2xl tabular-nums sm:text-3xl">
+                  {k.value}
+                </div>
+                <div
+                  className={`flex items-center gap-1 text-xs ${k.up ? "text-success" : "text-error"}`}
+                >
+                  <span
+                    aria-hidden="true"
+                    className="icon-[lucide--trending-up] size-3.5"
+                  />
                   {k.delta}
                 </div>
               </div>
@@ -101,25 +150,36 @@ function Dashboard() {
           <div className="card bg-base-100 shadow-xs lg:col-span-2">
             <div className="card-body gap-1">
               <h3 className="card-title text-base">Activity</h3>
-              <p className="text-sm text-base-content/60">Events processed over the last 12 months</p>
+              <p className="text-base-content/60 text-sm">
+                Events processed over the last 12 months
+              </p>
               <Chart
-                type="area"
                 height={300}
-                series={[{ name: "Events", data: TREND }]}
                 options={{ xaxis: { categories: MONTHS } }}
+                series={[{ data: TREND, name: "Events" }]}
+                type="area"
               />
             </div>
           </div>
           <div className="card bg-base-100 shadow-xs">
             <div className="card-body gap-1">
               <h3 className="card-title text-base">By status</h3>
-              <p className="text-sm text-base-content/60">Project distribution</p>
+              <p className="text-base-content/60 text-sm">
+                Project distribution
+              </p>
               <Chart
-                type="donut"
+                colorTokens={[
+                  "--color-success",
+                  "--color-warning",
+                  "--color-base-content",
+                ]}
                 height={300}
+                options={{
+                  labels: ["Active", "Paused", "Archived"],
+                  legend: { position: "bottom" },
+                }}
                 series={[activeCount, projects.length - activeCount, 3]}
-                options={{ labels: ["Active", "Paused", "Archived"], legend: { position: "bottom" } }}
-                colorTokens={["--color-success", "--color-warning", "--color-base-content"]}
+                type="donut"
               />
             </div>
           </div>
@@ -131,14 +191,20 @@ function Dashboard() {
             <div className="flex items-center justify-between p-4 pb-0">
               <h3 className="card-title text-base">Projects</h3>
               <button className="btn btn-primary btn-sm">
-                <span className="icon-[lucide--plus] size-4" aria-hidden="true"></span>
+                <span
+                  aria-hidden="true"
+                  className="icon-[lucide--plus] size-4"
+                />
                 New project
               </button>
             </div>
             {projects.length === 0 ? (
               <div className="flex flex-col items-center gap-2 p-10 text-center">
-                <span className="icon-[lucide--folder-kanban] size-8 text-base-content/30" aria-hidden="true"></span>
-                <p className="text-sm text-base-content/60">No projects yet.</p>
+                <span
+                  aria-hidden="true"
+                  className="icon-[lucide--folder-kanban] size-8 text-base-content/30"
+                />
+                <p className="text-base-content/60 text-sm">No projects yet.</p>
               </div>
             ) : (
               <div className="overflow-x-auto">
@@ -152,17 +218,19 @@ function Dashboard() {
                   </thead>
                   <tbody>
                     {projects.map((p) => (
-                      <tr key={p.id} className="hover:bg-base-200/40">
+                      <tr className="hover:bg-base-200/40" key={p.id}>
                         <td className="font-medium">{p.title}</td>
                         <td>
-                          <span className={`badge badge-sm ${STATUS_BADGE[p.status] ?? "badge-ghost"}`}>
+                          <span
+                            className={`badge badge-sm ${STATUS_BADGE[p.status] ?? "badge-ghost"}`}
+                          >
                             {p.status}
                           </span>
                         </td>
-                        <td className="text-right text-sm text-base-content/60">
+                        <td className="text-right text-base-content/60 text-sm">
                           {new Date(p.createdAt).toLocaleDateString("en-US", {
-                            month: "short",
                             day: "numeric",
+                            month: "short",
                             year: "numeric",
                           })}
                         </td>

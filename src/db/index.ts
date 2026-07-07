@@ -16,7 +16,7 @@ import { schema } from "#/db/schema";
  * over Cloudflare Workers + Hyperdrive.
  */
 export function makeDb(connectionString: string) {
-  const client = postgres(connectionString, { max: 5, fetch_types: false });
+  const client = postgres(connectionString, { fetch_types: false, max: 5 });
   return drizzle(client, { schema });
 }
 
