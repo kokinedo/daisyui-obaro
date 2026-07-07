@@ -1,13 +1,18 @@
 import { cloudflare } from "@cloudflare/vite-plugin";
 import tailwindcss from "@tailwindcss/vite";
-import { devtools } from "@tanstack/devtools-vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
+// IMPORTANT: do NOT add the @tanstack/devtools-vite `devtools()` plugin (or the
+// <TanStackDevtools> component). Its `__tsd/console-pipe` SSE channel constantly
+// reconnects, and through the ephemeral trycloudflare preview tunnel that
+// connection thrashes (500/502/520/524) — which destabilizes HMR, makes the
+// client hydration entry fail to load, and leaves the app half-hydrated so real
+// clicks never reach React's handlers (dead buttons in the preview). Keep
+// devtools out so the owner's preview stays interactive.
 const config = defineConfig({
   plugins: [
-    devtools(),
     cloudflare({ viteEnvironment: { name: "ssr" } }),
     tailwindcss(),
     tanstackStart(),

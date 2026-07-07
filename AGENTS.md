@@ -108,3 +108,8 @@ Hyperdrive config, a domain, Email, Stripe keys). Because all DB access is centr
   the PARENT's content at their own URLs (still HTTP 200!), and a redirect there loops the
   whole section. Standalone list+detail: put the list at `routes/x/index.tsx`. Verify every
   detail route renders its OWN content before finishing.
+- **NEVER add TanStack DevTools** (`@tanstack/devtools-vite` `devtools()` in vite.config, or
+  `<TanStackDevtools>` in `__root.tsx`). Its `__tsd/console-pipe` SSE thrashes through the
+  preview tunnel (500/502/520/524), which breaks hydration and leaves the app half-mounted so
+  real clicks never reach React's handlers — every button appears dead in the preview. The
+  starter ships without it; keep it that way.
