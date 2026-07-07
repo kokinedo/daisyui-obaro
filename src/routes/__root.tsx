@@ -26,6 +26,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* biome-ignore lint/security/noDangerouslySetInnerHtml: hardcoded constant script that must run pre-hydration to avoid a theme flash */}
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <HeadContent />
       </head>

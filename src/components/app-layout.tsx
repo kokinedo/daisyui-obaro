@@ -28,10 +28,12 @@ const NAV: NavItem[] = [
   { icon: "icon-[lucide--settings]", label: "Settings", to: "/settings" },
 ];
 
+const WHITESPACE_RE = /\s+/;
+
 function initials(name: string): string {
   return (
     name
-      .split(/\s+/)
+      .split(WHITESPACE_RE)
       .map((w) => w[0])
       .filter(Boolean)
       .slice(0, 2)
@@ -78,6 +80,7 @@ export function AppLayout({
               aria-label="Account menu"
               className="btn btn-ghost btn-sm gap-2"
               tabIndex={0}
+              type="button"
             >
               <span className="grid size-8 place-items-center rounded-full bg-primary font-semibold text-primary-content text-sm">
                 {initials(user.name)}
@@ -98,6 +101,7 @@ export function AppLayout({
                 <button
                   className="text-error hover:bg-error/10"
                   onClick={handleSignOut}
+                  type="button"
                 >
                   <span
                     aria-hidden="true"
@@ -165,6 +169,7 @@ export function AppLayout({
                 aria-label="Sign out"
                 className="btn btn-ghost btn-square btn-sm text-base-content/60 hover:text-error"
                 onClick={handleSignOut}
+                type="button"
               >
                 <span
                   aria-hidden="true"

@@ -190,7 +190,7 @@ function Dashboard() {
           <div className="card-body gap-4 p-0">
             <div className="flex items-center justify-between p-4 pb-0">
               <h3 className="card-title text-base">Projects</h3>
-              <button className="btn btn-primary btn-sm">
+              <button className="btn btn-primary btn-sm" type="button">
                 <span
                   aria-hidden="true"
                   className="icon-[lucide--plus] size-4"

@@ -49,6 +49,7 @@ export function ThemeChanger() {
         aria-label="Change theme"
         className="btn btn-ghost btn-sm gap-2"
         tabIndex={0}
+        type="button"
       >
         <span aria-hidden="true" className="icon-[lucide--palette] size-4" />
         <span className="hidden capitalize sm:inline">{theme}</span>
@@ -63,6 +64,7 @@ export function ThemeChanger() {
             <button
               className={t === theme ? "menu-active capitalize" : "capitalize"}
               onClick={() => choose(t)}
+              type="button"
             >
               <span
                 aria-hidden="true"

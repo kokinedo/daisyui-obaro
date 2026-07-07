@@ -3,7 +3,6 @@
   "extends": ["ultracite/biome/core", "ultracite/biome/react"],
   "files": {
     "includes": [
-      "**",
       "!src/routeTree.gen.ts",
       "!.sandcastle",
       "!drizzle",

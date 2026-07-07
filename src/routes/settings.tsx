@@ -50,7 +50,9 @@ function Settings() {
               />
             </label>
             <div className="flex justify-end">
-              <button className="btn btn-primary btn-sm">Save changes</button>
+              <button className="btn btn-primary btn-sm" type="button">
+                Save changes
+              </button>
             </div>
           </div>
         </section>
@@ -97,7 +99,10 @@ function Settings() {
               Permanently delete your account and all data.
             </p>
             <div className="flex justify-end">
-              <button className="btn btn-error btn-outline btn-sm">
+              <button
+                className="btn btn-error btn-outline btn-sm"
+                type="button"
+              >
                 Delete account
               </button>
             </div>

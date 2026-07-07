@@ -131,7 +131,9 @@ export function Chart({
       });
     }
 
-    void build();
+    build().catch(() => {
+      // Chart build manages its own state; a failure just leaves no chart.
+    });
     return () => {
       disposed = true;
       observer?.disconnect();
