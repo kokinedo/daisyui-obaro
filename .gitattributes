@@ -1,0 +1,7 @@
+# Biome/Ultracite enforce LF; Windows checkouts with autocrlf smudge to CRLF and
+# fail lint on every file in generated apps. Keep LF in repo AND working tree.
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.ico binary
+*.woff2 binary
